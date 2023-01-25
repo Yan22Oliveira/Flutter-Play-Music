@@ -2,6 +2,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 
 import './player_music_page.dart';
 
+
 class PlayerMusicModule extends Module {
 
   @override
@@ -11,7 +12,7 @@ class PlayerMusicModule extends Module {
   List<ModularRoute> get routes => [
     ChildRoute(
       Modular.initialRoute,
-      child: (_, args) => PlayerMusicPage(music: args.data!),
+      child: (_, args) => const PlayerMusicPage(),
     ),
   ];
 }

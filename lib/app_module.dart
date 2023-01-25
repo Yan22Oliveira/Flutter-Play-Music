@@ -8,6 +8,8 @@ class AppModule extends Module {
   @override
   List<Bind> get binds => [
     Bind.factory((i) => Dio()),
+    Bind.singleton<PlayerMusicCubit>((i) => PlayerMusicCubit()),
+    Bind.singleton<ProgressBarCubit>((i) => ProgressBarCubit()),
   ];
 
   @override

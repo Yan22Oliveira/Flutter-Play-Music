@@ -1,34 +1,58 @@
 import 'package:flutter/material.dart';
 
-import '../../models/models.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+
+import '../modules.dart';
 import './components/components.dart';
 
-class PlayerMusicPage extends StatelessWidget {
+class PlayerMusicPage extends StatefulWidget {
 
-  final MusicModel music;
   const PlayerMusicPage({
-    required this.music,
     Key? key,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  State<PlayerMusicPage> createState() => _PlayerMusicPageState();
+}
 
+class _PlayerMusicPageState extends State<PlayerMusicPage> {
+
+  final _cubit = Modular.get<PlayerMusicCubit>();
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.black,
-        title: Text('Tocando a Musica ${music.title}'),
+        title: const Text('Player'),
       ),
-      body: Column(
-        children: [
-          BuildImageHeader(urlImage: music.urlImage),
-          const BuildNameMusic(),
-          const BuildProgressBar(),
-          const BuildButtons(),
-        ],
+      body: BlocBuilder<PlayerMusicCubit, PlayerMusicState>(
+        bloc: _cubit,
+        builder: (context, state) {
+
+          if(state is PlayerLoadingState){
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }else if(state is PlayerLoadedState){
+
+            return Column(
+              children: [
+                BuildImageHeader(urlImage: state.music.urlImage!),
+                BuildNameMusic(music: state.music),
+                const BuildProgressBar(),
+                BuildButtons(music: state.music),
+              ],
+            );
+
+          }else{
+            return const  SizedBox();
+          }
+
+        },
       ),
     );
   }
+
 }

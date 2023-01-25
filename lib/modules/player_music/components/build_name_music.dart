@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../../../models/models.dart';
 import '../../../shared/shared.dart';
 
 class BuildNameMusic extends StatelessWidget {
 
-  const BuildNameMusic({Key? key}) : super(key: key);
+  final MusicModel music;
+  const BuildNameMusic({required this.music, Key? key,}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -13,12 +15,12 @@ class BuildNameMusic extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            'Duas horas de louvores - Volume 1',
+            music.title!,
             textAlign: TextAlign.center,
             style: AppTextStyles.textTitleLarge,
           ),
           Text(
-            'Igreja Cristã Maranata',
+            music.subTitle!,
             style: AppTextStyles.textSubTitle,
           ),
         ],

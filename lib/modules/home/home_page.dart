@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import '../../models/models.dart';
 import '../../shared/shared.dart';
-import './home_controller.dart';
+import './cubit/cubit.dart';
 
 class HomePage extends StatefulWidget {
 
@@ -16,42 +16,75 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  final _controller = Modular.get<HomeController>();
+  final _cubit = Modular.get<HomeCubit>();
+
+  @override
+  void dispose() {
+    _cubit.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
+        elevation: 0,
         title: const Text('Play List'),
-        backgroundColor: Colors.black,
       ),
-      body: ListView.builder(
-        itemCount: 10,
-        itemBuilder: (context, index){
-          return ListTile(
-            onTap: () => _controller.onPagePlayeMusic(music,),
-            title: Text(
-              music.title,
-              style: AppTextStyles.textTitle,
-            ),
-            subtitle: Text(
-              music.subTitle,
-              style: AppTextStyles.textSubTitle,
-            ),
-            leading: Image.network(music.urlImage),
-            contentPadding: const EdgeInsets.all(8),
-          );
+      body: BlocBuilder<HomeCubit, HomeState>(
+        bloc: _cubit,
+        builder: (context, state) {
+
+          if(state is LoadingState){
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }else if(state is LoadedState){
+
+            var list = state.listMusic;
+
+            return ListView.builder(
+              itemCount: list.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  onTap: () => _cubit.onPagePlayeMusic(list,index),
+                  title: Text(
+                    list[index].title!,
+                    style: AppTextStyles.textTitle,
+                  ),
+                  subtitle: Text(
+                    list[index].subTitle!,
+                    style: AppTextStyles.textSubTitle,
+                  ),
+                  leading: Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Image.network(
+                      list[index].urlImage!,
+                      height: 88,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.all(8),
+                );
+              },
+            );
+
+          } else if(state is ErrorState) {
+
+            return const Center(
+              child: Icon(
+                Icons.error_outline,
+                size: 40,
+                color: Colors.red,
+              ),
+            );
+
+          } else {
+            return const SizedBox();
+          }
+
         },
       ),
     );
   }
-
-  var music = MusicModel(
-    title: 'Duas horas de louvores - Volume 1',
-    subTitle: 'Igreja Cristã Maranata',
-    url: '',
-    urlImage: 'https://i.ytimg.com/vi/3A_lVehtg14/maxresdefault.jpg',
-  );
 
 }
